@@ -52,4 +52,19 @@ object PrintableExercise extends App {
   /* Second Exercise: Print cat using extension method (prettier syntax) */
   import PrintableSyntax._
   cat.print()
+
+  /* Third exercise: use Cats instead! */
+  import cats.Show
+  import cats.instances.int._
+  import cats.instances.string._
+  import cats.syntax.show._
+
+  implicit val showCat: Show[Cat] = Show.show(
+    (cat: Cat) =>
+      s"${cat.name.show} is a " +
+        s"${cat.age.show} year-old " +
+        s"${cat.colour.show} cat."
+  )
+
+  println(cat.show)
 }
