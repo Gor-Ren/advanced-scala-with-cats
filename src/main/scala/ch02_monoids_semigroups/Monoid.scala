@@ -12,21 +12,21 @@ object Monoid {
   def apply[A](implicit monoid: Monoid[A]): Monoid[A] = monoid
 }
 
-class BoolAnd extends Monoid[Boolean] {
+object BoolAnd extends Monoid[Boolean] {
   override val empty: Boolean = true
 
   override def combine(x: Boolean, y: Boolean): Boolean =
     x && y
 }
 
-class BoolOr extends Monoid[Boolean] {
+object BoolOr extends Monoid[Boolean] {
   override val empty: Boolean = false
 
   override def combine(x: Boolean, y: Boolean): Boolean =
     x || y
 }
 
-class BoolXor extends Monoid[Boolean] {
+object BoolXor extends Monoid[Boolean] {
   override val empty: Boolean = false
 
   override def combine(x: Boolean, y: Boolean): Boolean =
