@@ -3,7 +3,8 @@ package ch02_monoids_semigroups
 import org.scalatest.FlatSpec
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
-trait MonoidBehaviours { this: FlatSpec =>
+trait MonoidBehaviours extends ScalaCheckDrivenPropertyChecks {
+  this: FlatSpec =>
 
   val allBools: Set[Boolean] = Set(true, false)
 
@@ -16,18 +17,16 @@ trait MonoidBehaviours { this: FlatSpec =>
 
   def booleanMonoid(m: => Monoid[Boolean]): Unit = {
 
-    it should "be associative" in {
-      allBoolTriples.foreach {
+    it should "obey the associative law" in {
+      allBoolTriples.forall {
         case (a, b, c) =>
-          assert(
-            m.combine(m.combine(a, b), c) === m.combine(a, m.combine(b, c))
-          )
+          m.combine(m.combine(a, b), c) === m.combine(a, m.combine(b, c))
       }
     }
 
-    it should "have an identity value" in {
-      allBools.foreach(b => assert(m.combine(b, m.empty) === b))
-      allBools.foreach(b => assert(m.combine(m.empty, b) === b))
+    it should "obey the identity law" in {
+      allBools.forall(b => m.combine(b, m.empty) === b)
+      allBools.forall(b => m.combine(m.empty, b) === b)
     }
   }
 }
