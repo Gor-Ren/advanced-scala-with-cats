@@ -3,7 +3,7 @@ package ch02_monoids_semigroups
 import org.scalatest.FlatSpec
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
-trait MonoidBehaviours extends ScalaCheckDrivenPropertyChecks {
+trait BoolMonoidBehaviours extends ScalaCheckDrivenPropertyChecks {
   this: FlatSpec =>
 
   val allBools: Set[Boolean] = Set(true, false)

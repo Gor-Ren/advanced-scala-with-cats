@@ -33,4 +33,38 @@ object BoolXor extends Monoid[Boolean] {
     (x && !y) || (!x && y)
 }
 
-// TODO: test monoid laws hold
+// see TestBoolMonoids for proofs they behave correctly
+
+class SetAdd[A] extends Monoid[Set[A]] {
+  override def empty: Set[A] = Set.empty
+
+  override def combine(x: Set[A], y: Set[A]): Set[A] = x ++ y
+}
+
+class SetUnion[A] extends Monoid[Set[A]] {
+  override def empty: Set[A] = Set.empty
+
+  override def combine(x: Set[A], y: Set[A]): Set[A] = x.union(y)
+}
+
+class SetIntersect[A] extends Semigroup[Set[A]] {
+  override def combine(x: Set[A], y: Set[A]): Set[A] = x.intersect(y)
+}
+
+object MonoidExercise extends App {
+  implicit val boolOrMonoid: Monoid[Boolean] = BoolOr
+
+  implicit private class MonoidSyntax[A](value: A) { // private to avoid clashes
+    def empty(implicit m: Monoid[A]): A = m.empty
+
+    def combine(other: A)(implicit m: Monoid[A]): A =
+      m.combine(value, other)
+  }
+
+  println(true.combine(true))
+
+  // Alternatively, can write things like:
+  Monoid[Boolean].empty
+  // ... because an implicit Monoid[Boolean] is in scope, and the Monoid.apply
+  // method will return it
+}
