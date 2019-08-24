@@ -1,7 +1,13 @@
 package ch01_introduction
 
 trait Printable[A] {
+  self =>
+
   def format(value: A): String
+
+  // added in chap 3.6
+  def contramap[B](f: B => A): Printable[B] =
+    (value: B) => self.format(f(value))
 }
 
 object PrintableInstances {
