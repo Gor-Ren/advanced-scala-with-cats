@@ -22,9 +22,19 @@ package ch04_monads
     - associativity: flatMapping over f and g is the same as flatMapping over f
                      and then flatMapping over g:
         m.flatMap(f).flatMap(g) == m.flatMap(x => f(x).flatMap(g))
+
+   Monads are also Functors because `map` can be implemented easily from pure
+   and flatMap.
  */
 
-trait MyMonad[F[_]] {}
+trait MyMonad[F[_]] {
+  def pure[A](a: A): F[A]
+
+  def flatMap[A, B](value: F[A])(f: A => F[B]): F[B]
+
+  def map[A, B](value: F[A])(f: A => B): F[B] =
+    flatMap(value)(a => pure(f(a)))
+}
 
 /* Some scrap code comparing map to flatMap. */
 object MyMonadComparison extends App {
