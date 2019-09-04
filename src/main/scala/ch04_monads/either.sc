@@ -24,7 +24,7 @@ import cats.syntax.either._ // for asLeft/Right
 val a = 3.asRight  // smart constructor; has type Either, not Right
 // smart constructors help type inference by avoiding over-narrowing the type
 
-/** Divide x by all values in divs, returning result or error */
+/** Divide x by all values in divs, returning result, or error if div 0 */
 def divideBy(x: Float, divs: List[Float]): Either[String, Float] =
   divs.foldLeft(Either.right[String, Float](x))((result, div) =>
     result.flatMap(x =>
@@ -39,3 +39,22 @@ assert(divideBy(2.0f, List.empty) == 2.0f.asRight)
 assert(divideBy(2.0f, List(1.0f)) == 2.0f.asRight)
 assert(divideBy(2.0f, List(1.0f, 2.0f)) == 1.0f.asRight)
 assert(divideBy(2.0f, List(0.0f)).isLeft)
+
+// cats adds useful methods
+import cats.syntax.either._
+
+"maths error!".asLeft[Int].orElse(Right(0))
+"maths error!".asLeft[Int].getOrElse(0)
+
+// provide a partial function to maybe recover
+"maths error!".asLeft[Int].recover {
+  case str: String => 0
+}
+// there's also recoverWith that returns an Either
+
+1.asRight[String].ensure("1 not permitted!")(_ != 1)
+
+// we can map on the Right, the Left, or both
+1.asRight[String].map(_ + 1)
+1.asRight[String].leftMap(_ + "hello") // does nothing on a Right
+1.asRight[String].bimap(_ + "hello", _ + 2)
