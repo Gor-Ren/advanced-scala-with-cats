@@ -58,3 +58,17 @@ import cats.syntax.either._
 1.asRight[String].map(_ + 1)
 1.asRight[String].leftMap(_ + "hello") // does nothing on a Right
 1.asRight[String].bimap(_ + "hello", _ + 2)
+
+/* Error Handling */
+
+// common error handling patterns are to use `Throwable` as the error type,
+// or an algebraic data type
+val throwableOp: Either[Throwable, Boolean] = Left(ArithmeticException)
+
+sealed trait MyError
+case object DivZero extends MyError
+final case class CustomError(message: String) extends MyError
+
+type MathsOpResult = Either[MyError, Float]
+
+val failableOp: MathsOpResult = Left(DivZero)
