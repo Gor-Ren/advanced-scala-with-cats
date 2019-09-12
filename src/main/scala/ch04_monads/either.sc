@@ -63,7 +63,7 @@ import cats.syntax.either._
 
 // common error handling patterns are to use `Throwable` as the error type,
 // or an algebraic data type
-val throwableOp: Either[Throwable, Boolean] = Left(ArithmeticException)
+val throwableOp: Either[Throwable, Boolean] = Left(new ArithmeticException)
 
 sealed trait MyError
 case object DivZero extends MyError
@@ -72,3 +72,11 @@ final case class CustomError(message: String) extends MyError
 type MathsOpResult = Either[MyError, Float]
 
 val failableOp: MathsOpResult = Left(DivZero)
+
+// we can abstract over error handling types (Try, Either, ...) with MonadError
+import cats.instances.try_._  // for MonadError[Try]
+import cats.syntax.applicativeError._ // for raiseError (N.B. not MonadError!)
+import scala.util.Try
+
+val exn: Throwable = new Exception("failure during calculation")
+val tryResult = exn.raiseError[Try, Int]
