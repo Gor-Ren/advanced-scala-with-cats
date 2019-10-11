@@ -20,5 +20,10 @@ val log = writerBoth1.written  // if we weren't using Id, we'd get an effect bac
 val (r, l) = writerBoth1.run
 
 // a Writer preserves its log as we map and flatMap over it
-// it appends new logs to the existing, so we should choose a log type with
-// efficient appends (like Vector)
+// it appends (I think it SemiGroup.combines them) new logs to the existing, so
+// we should choose a log type with efficient appends (like Vector)
+
+// we can also bimap and mapBoth over it
+
+// we can clear the log:
+writerBoth1.reset  // resets log to Monoid.empty
