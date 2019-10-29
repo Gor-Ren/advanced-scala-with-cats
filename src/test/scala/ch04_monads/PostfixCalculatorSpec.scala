@@ -1,8 +1,6 @@
 package ch04_monads
 
-import cats.Monoid
 import cats.data.State
-import cats.instances.list._
 import org.scalatest.{FunSuite, Matchers}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
@@ -11,17 +9,38 @@ class PostfixCalculatorSpec
     with ScalaCheckDrivenPropertyChecks
     with Matchers {
 
-  test("PostfixCalculator#evalOne adds an integer to the stack") {
-    forAll { i: Int =>
-      val result = PostfixCalculator().evalOne(i.toString).get
-      runAndGetStack(result) should contain theSameElementsInOrderAs Seq(i)
+  test("PostfixCalculator#evalOne adds an integer to the top of the stack") {
+    forAll { (i: Int, stack: List[Int]) =>
+      PostfixCalculator()
+        .evalOne(i.toString)
+        .runS(stack)
+        .value should contain theSameElementsInOrderAs (i :: stack)
     }
   }
 
-  /** Runs the input calculation with an empty stack, returning the stack. */
-  def runAndGetStack[S, ?](
-      calculation: State[S, ?]
-  )(implicit m: Monoid[S]): S = {
-    calculation.runS(m.empty).value
+  test("PostfixCalculator#evalOne returns an integer as the result") {
+    forAll { (i: Int, stack: List[Int]) =>
+      PostfixCalculator()
+        .evalOne(i.toString)
+        .runA(stack)
+        .value shouldBe i
+    }
+  }
+
+  test(
+    "PostfixCalculator#evalOne pops two ints from the stack and pushes the result"
+  ) {
+    forAll { (i: Int, stack: List[Int]) =>
+      PostfixCalculator()
+        .evalOne(i.toString)
+        .runA(stack)
+        .value shouldBe i
+    }
+  }
+
+  /** Runs the input calculation with the input stack, returning the stack. */
+  def runAndGetStack(initialStack: List[Int],
+                     calculation: State[List[Int], Int]): List[Int] = {
+    calculation.runS(initialStack).value
   }
 }

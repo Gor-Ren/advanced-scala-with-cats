@@ -14,10 +14,12 @@ class PostfixCalculator {
       for {
         el1 <- pop
         el2 <- pop
-      } yield op.calculate(el1, el2)
+        ans = op.calculate(el1, el2)
+        _ <- push(ans)
+      } yield ans
     } else {
       // must be a number (or throw)
-      state.modify(sym.toInt :: _)
+      push(sym.toInt)
     }
 
   private def pop: CalculatorState[Int] = {
@@ -25,6 +27,11 @@ class PostfixCalculator {
       case h :: tail => (tail, h)
       case _         => throw new RuntimeException("stack is empty!")
     }
+  }
+
+  /** Prepends input to stack and returns it as result. */
+  private def push(i: Int): CalculatorState[Int] = {
+    State[List[Int], Int](stack => (i :: stack, i))
   }
 }
 
