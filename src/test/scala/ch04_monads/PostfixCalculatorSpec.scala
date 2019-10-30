@@ -4,6 +4,8 @@ import org.scalacheck.{Arbitrary, Gen}
 import org.scalatest.{FunSuite, Matchers}
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
+import scala.util.Try
+
 class PostfixCalculatorSpec
     extends FunSuite
     with ScalaCheckDrivenPropertyChecks
@@ -34,29 +36,37 @@ class PostfixCalculatorSpec
   test(
     "PostfixCalculator#evalOne pops two values from the stack and pushes result"
   ) {
-    forAll { stack: List[Int] =>
-      whenever(stack.size >= 2) {
+    forAll { (stack: List[Int], op: Operator) =>
+      val shouldRun: Boolean = stack.size >= 2 && {
+        // don't run arithmetic edge cases that cause a failure
+        val a = stack.head
+        val b = stack.tail.head
+        Try(op.operation(a, b)).isSuccess
+      }
+
+      whenever(shouldRun) {
         val (finalStack, answer) = PostfixCalculator()
-          .evalOne(Operator.add.symbol.toString)
+          .evalOne(Operator.add.symbol)
           .run(stack)
           .value
-        answer shouldBe Operator.add.operation(stack.head, stack.tail.head)
-        finalStack should contain theSameElementsInOrderAs answer :: stack.drop(
-          2
+        answer shouldBe op.operation(stack.head, stack.tail.head)
+        finalStack should contain theSameElementsInOrderAs
+          (answer :: stack.drop(2))
+        println(
+          s"stack=$stack, operation=$op, finalStack=$finalStack, ans=$answer"
         )
       }
     }
   }
 }
 
-case class Operator(symbol: Char, operation: (Int, Int) => Int)
+case class Operator(symbol: String, operation: (Int, Int) => Int)
 
 object Operator {
-
-  val add: Operator = new Operator('+', (x, y) => x + y)
-  val subtract: Operator = new Operator('-', (x, y) => x + y)
-  val multiply: Operator = new Operator('*', (x, y) => x + y)
-  val divide: Operator = new Operator('/', (x, y) => x + y)
+  val add: Operator = new Operator("+", (x, y) => x + y)
+  val subtract: Operator = new Operator("-", (x, y) => x + y)
+  val multiply: Operator = new Operator("*", (x, y) => x + y)
+  val divide: Operator = new Operator("/", (x, y) => x + y)
 
   val operators: Set[Operator] = Set(add, subtract, multiply, divide)
 }
