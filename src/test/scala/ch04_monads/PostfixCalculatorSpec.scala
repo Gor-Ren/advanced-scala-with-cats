@@ -95,6 +95,10 @@ class PostfixCalculatorSpec
       .runA(List.empty)
       .value shouldBe 12
   }
+
+  test("PostfixCalculator#evalInput evaluates a multi-stage expression") {
+    PostfixCalculator().evalInput("3 12 + 5 *") shouldBe 75
+  }
 }
 
 case class Operator(symbol: String, operation: (Int, Int) => Int)

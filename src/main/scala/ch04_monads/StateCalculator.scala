@@ -27,6 +27,11 @@ class PostfixCalculator {
       .map(evalOne)
       .foldLeft(initialState)((state, next) => state.flatMap(_ => next))
 
+  def evalInput(inpit: String): Int =
+    evalAll(inpit.split(' ').toList)
+      .runA(List.empty)
+      .value
+
   private def pop: CalculatorState[Int] = {
     State[List[Int], Int] {
       case h :: tail => (tail, h)
