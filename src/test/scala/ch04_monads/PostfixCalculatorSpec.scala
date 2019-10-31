@@ -52,11 +52,18 @@ class PostfixCalculatorSpec
         answer shouldBe op.operation(stack.head, stack.tail.head)
         finalStack should contain theSameElementsInOrderAs
           (answer :: stack.drop(2))
-        println(
-          s"stack=$stack, operation=$op, finalStack=$finalStack, ans=$answer"
-        )
       }
     }
+  }
+
+  test("PostfixCalculator#evalAll has empty stack and result 0 for no-op") {
+    val (stack, result) = PostfixCalculator()
+      .evalAll(List.empty)
+      .run(List.empty)
+      .value
+
+    stack shouldBe empty
+    result shouldBe 0
   }
 
   test("PostfixCalculator#evalAll adds integers to the top of the stack") {
