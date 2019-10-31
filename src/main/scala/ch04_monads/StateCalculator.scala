@@ -6,7 +6,7 @@ import cats.data.State
 class PostfixCalculator {
   type CalculatorState[A] = State[List[Int], A]
 
-  val state: CalculatorState[Int] = State.pure(0)
+  val initialState: CalculatorState[Int] = State.pure(0)
 
   def evalOne(sym: String): CalculatorState[Int] =
     if (Operators.isOperator(sym)) {
@@ -21,6 +21,11 @@ class PostfixCalculator {
       // must be a number (or throw)
       push(sym.toInt)
     }
+
+  def evalAll(input: List[String]): CalculatorState[Int] =
+    input
+      .map(evalOne)
+      .foldLeft(initialState)((state, next) => state.flatMap(_ => next))
 
   private def pop: CalculatorState[Int] = {
     State[List[Int], Int] {

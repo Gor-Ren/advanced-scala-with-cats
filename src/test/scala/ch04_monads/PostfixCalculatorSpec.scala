@@ -58,6 +58,36 @@ class PostfixCalculatorSpec
       }
     }
   }
+
+  test("PostfixCalculator#evalAll adds integers to the top of the stack") {
+    forAll { (input: List[Int], stack: List[Int]) =>
+      PostfixCalculator()
+        .evalAll(input.map(_.toString))
+        .runS(stack)
+        .value should contain theSameElementsInOrderAs (input.reverse ++ stack)
+    }
+  }
+
+  test("PostfixCalculator#evalAll returns the last input as result") {
+    forAll { (input: List[Int], stack: List[Int]) =>
+      val result: Int = PostfixCalculator()
+        .evalAll(input.map(_.toString))
+        .runA(stack)
+        .value
+
+      if (input.nonEmpty)
+        result shouldBe input.last
+      else
+        result shouldBe 0
+    }
+  }
+
+  test("PostfixCalculator#evalAll evaluates a multi-stage expression") {
+    PostfixCalculator()
+      .evalAll(List("1", "2", "+", "4", "*"))
+      .runA(List.empty)
+      .value shouldBe 12
+  }
 }
 
 case class Operator(symbol: String, operation: (Int, Int) => Int)
