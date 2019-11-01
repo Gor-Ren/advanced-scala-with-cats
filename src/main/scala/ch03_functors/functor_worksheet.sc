@@ -26,6 +26,7 @@ Functor[List].map(list1)(_ + 1)
 
 val f: Int => String = x => String.valueOf(x -10)
 
+/* lifts an f: A => B to an F[A] => F[B] */
 Functor[Option].lift(f).apply(None)
 Functor[Option].lift(f).apply(Some(0))
 
