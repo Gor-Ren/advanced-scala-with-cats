@@ -20,6 +20,11 @@ object Tree {
           )
       }
   }
+
+  // convenience methods to create branches/leafs typed as `Tree`
+  def branch[A](left: Tree[A], right: Tree[A]): Tree[A] = Branch(left, right)
+
+  def leaf[A](value: A): Tree[A] = Leaf(value)
 }
 
 object TreeExercise extends App {
@@ -32,7 +37,6 @@ object TreeExercise extends App {
         Leaf("three")
       )
     )
-
   val incredulousTree = testTree.map(_ + "??!")
   println(incredulousTree)
 }
